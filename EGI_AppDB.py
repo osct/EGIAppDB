@@ -27,7 +27,7 @@ __date__      = "$Date: 13/07/2016 16:21:19"
 __copyright__ = "Copyright (c) 2016 EGI Foundation"
 __license__   = "Apache Licence v2.0"
 
-apikey = "51db5c98-96fb-4566-866b-98b3d470170e" # <== Change here!
+apikey = "XXXXXXXXXXXXX-XXXX-XXXX-XXXXXXXXXXXX" # <== Change here!
 vo = "training.egi.eu"
 
 def appdb_call(c):
@@ -39,17 +39,8 @@ def appdb_call(c):
         data.replace('\n','')
         return xmltodict.parse(data)
 
-def etoken_call(c):
-        conn  =  httplib.HTTPSConnection('etokenserver2.ct.infn.it', 8443, cert_file='./hostcert.pem', key_file='./hostkey.pem')
-        conn.request("GET", c)
-        data = conn.getresponse().read()
-        conn.close()
-        return data
-
 
 def main():
-        #proxy = etoken_call('/eTokenServer/eToken/bc779e33367eaad7882b9dfaa83a432c?voms=fedcloud.egi.eu:/fedcloud.egi.eu&proxy-renewal=false&disable-voms-proxy=false&rfc-proxy=true&cn-label=eToken:Empty')
-	#print "proxy = %s " %proxy
 
         print " ~ Listing providers subscribed the [%s] VO" %vo
         data = appdb_call('/rest/1.0/sites?flt=%%2B%%3Dvo.name:%s&%%2B%%3Dsite.supports:1' %vo)
