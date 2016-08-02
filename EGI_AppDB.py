@@ -22,16 +22,14 @@ import xmltodict
 
 __author__    = "Giuseppe LA ROCCA"
 __email__     = "giuseppe.larocca@egi.eu"
-__version__   = "$Revision: 0.0.5"
-__date__      = "$Date: 21/07/2016 11:45:27"
+__version__   = "$Revision: 0.0.6"
+__date__      = "$Date: 02/08/2016 17:17:27"
 __copyright__ = "Copyright (c) 2016 EGI Foundation"
 __license__   = "Apache Licence v2.0"
 
-apikey = "51db5c98-96fb-4566-866b-98b3d470170e" # <== Change here!
 vo = "training.egi.eu"				# <== Change here!
 
 def appdb_call(c):
-        global apikey
         conn  =  httplib.HTTPSConnection('appdb.egi.eu')
         conn.request("GET", c)
         data = conn.getresponse().read()
@@ -41,7 +39,7 @@ def appdb_call(c):
 
 def main():
 
-        print " ~ Listing providers subscribed the [%s] VO" %vo
+        print " ~ Listing providers that have subscribed the [%s] VO" %vo
 	# E.g. https://appdb.egi.eu/rest/1.0/sites?flt=%%2B%%3Dvo.name:training.egi.eu&%%2B%%3Dsite.supports:1
         data = appdb_call('/rest/1.0/sites?flt=%%2B%%3Dvo.name:%s&%%2B%%3Dsite.supports:1' %vo)
 
@@ -52,27 +50,25 @@ def main():
         		 va_data = appdb_call('/rest/1.0/va_providers/%s' %service['@id'])
 
 			 # E.g.: https://appdb.egi.eu/rest/1.0/va_providers/8253G0
-			 url = ("/rest/1.0/va_providers/%s" %service['@id'])
+			 url = ("https://appdb.egi.eu/rest/1.0/va_providers/%s" %service['@id'])
 
                          print "- %s [%s] \n\t--> Sitename: %s \
-					    \n\t--> Hostname: %s \
 					    \n\t--> Endpoint: %s \
 					    \n\t--> Status: %s \
 					    \n\t--> URL: %s" \
 				% (site['@name'],
 				   service['@id'],
 				   site['site:officialname'], 
-				   service['@host'],  
 				   va_data['appdb:appdb']['virtualization:provider']['provider:endpoint_url'], 
 				   site['@status'], 
 				   url)
 
 			
-			 print "\n ~ Getting published resource_tpl\n"
+			 print "\n ~ Listing available resource(s) template\n"
 			 for resource_tpl in va_data['appdb:appdb']['virtualization:provider']['provider:template']:
 			 	print "\t%s" %resource_tpl['provider_template:resource_id']
 			 
- 			 print " ~ Getting published os_tpl"
+ 			 print "\n ~ Listing available Virtual Appliance(s)"
 			 for os_tpl in va_data['appdb:appdb']['virtualization:provider']['provider:image']:
 			 	try:
 					if vo in os_tpl['@voname']:
@@ -87,27 +83,24 @@ def main():
 	
                 else:
                         va_data = appdb_call('/rest/1.0/va_providers/%s' %site['site:service']['@id'])
-
-			url = ("/rest/1.0/va_providers/%s" %site['site:service']['@id'])
+			url = ("https://appdb.egi.eu/rest/1.0/va_providers/%s" %service['@id'])
 
                     	print "\n- %s [%s] \n\t--> Sitename: %s \
-				           \n\t--> Hostname: %s \
 				           \n\t--> Endpoint: %s \
 				           \n\t--> Status: %s \
 					   \n\t--> URL: %s" \
 				% (site['@name'],
 				   site['site:service']['@id'], 
 				   site['site:officialname'], 
-				   site['site:service']['@host'], 
 				   va_data['appdb:appdb']['virtualization:provider']['provider:endpoint_url'], 
 				   site['@status'], 
 				   url)
 			 
-			print "\n ~ Getting published resource_tpl\n"
+			print "\n ~ Listing available resource(s) template\n"
 			for resource_tpl in va_data['appdb:appdb']['virtualization:provider']['provider:template']:
                         	print "\t%s" %resource_tpl['provider_template:resource_id']
 
-			print "\n ~ Getting published os_tpl"
+			print "\n ~ Listing available Virtual Appliance(s)"
                         for os_tpl in va_data['appdb:appdb']['virtualization:provider']['provider:image']:
 				try:
 					if vo in os_tpl['@voname']:
